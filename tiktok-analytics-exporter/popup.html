@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>My TikTok Analytics Backup</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>My TikTok Analytics</h1>
+      <p class="subtitle">Back up your own creator stats to a CSV you keep</p>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="bulk">Bulk export</button>
+      <button class="tab" data-tab="single">Single video</button>
+      <button class="tab" data-tab="debug">Debug</button>
+    </nav>
+
+    <section id="page-warning" class="warning hidden">
+      Open <strong>your TikTok Studio &gt; Content</strong> page first, then
+      reopen this popup. The extension only sees pages you load yourself.
+      <button id="open-studio">Open TikTok Studio</button>
+    </section>
+
+    <!-- ===================== BULK TAB ===================== -->
+    <div class="tab-panel" data-panel="bulk">
+      <section id="form-section">
+        <label>
+          <span>Start date</span>
+          <input type="date" id="start-date" />
+        </label>
+        <label>
+          <span>End date</span>
+          <input type="date" id="end-date" />
+        </label>
+        <div class="presets">
+          <button data-days="30">Last 30 days</button>
+          <button data-days="90">Last 3 months</button>
+          <button data-days="365">Last year</button>
+          <button data-days="">All time</button>
+        </div>
+      </section>
+
+      <section id="actions">
+        <button id="start" class="primary">Start export</button>
+        <button id="cancel" class="ghost hidden">Cancel</button>
+        <button id="reset" class="ghost">Reset</button>
+      </section>
+
+      <section id="status">
+        <div class="phase">
+          Phase: <span id="phase-label">idle</span>
+        </div>
+        <div class="progress">
+          <div class="bar"><div id="bar-fill"></div></div>
+          <div id="progress-text">—</div>
+        </div>
+        <div id="counts">
+          <span>Videos seen: <strong id="count-videos">0</strong></span>
+          <span>Rows: <strong id="count-rows">0</strong></span>
+          <span>Skipped: <strong id="count-skipped">0</strong></span>
+        </div>
+        <div id="error" class="error hidden"></div>
+      </section>
+
+      <section id="download-section" class="hidden">
+        <button id="download" class="primary">Download CSV</button>
+        <details>
+          <summary>Skipped videos</summary>
+          <ul id="skipped-list"></ul>
+        </details>
+      </section>
+    </div>
+
+    <!-- ===================== SINGLE-VIDEO TAB ===================== -->
+    <div class="tab-panel hidden" data-panel="single">
+      <section>
+        <label class="full">
+          <span>Video ID or URL</span>
+          <input
+            type="text"
+            id="single-input"
+            placeholder="7599987652200385800 or https://www.tiktok.com/@user/video/7599987..."
+            spellcheck="false"
+          />
+        </label>
+        <div class="actions-row">
+          <button id="single-fetch" class="primary">Fetch insight</button>
+          <button id="single-copy" class="ghost" disabled>Copy row JSON</button>
+          <button id="single-copy-raw" class="ghost" disabled>Copy raw JSON</button>
+        </div>
+      </section>
+
+      <section id="single-status" class="hidden">
+        <div class="phase">
+          <span id="single-phase">idle</span>
+          <span class="muted" id="single-meta"></span>
+        </div>
+        <div id="single-error" class="error hidden"></div>
+      </section>
+
+      <section id="single-result" class="hidden">
+        <details open>
+          <summary>Parsed row</summary>
+          <table id="single-row-table"></table>
+        </details>
+        <details>
+          <summary>Raw response</summary>
+          <pre id="single-raw"></pre>
+        </details>
+      </section>
+    </div>
+
+    <!-- ===================== DEBUG TAB ===================== -->
+    <div class="tab-panel hidden" data-panel="debug">
+      <section>
+        <div class="debug-meta">
+          <span>video_list hits: <strong id="dbg-vl">0</strong></span>
+          <span>insight hits: <strong id="dbg-ins">0</strong></span>
+          <span>profile hits: <strong id="dbg-prof">0</strong></span>
+        </div>
+        <div class="debug-actions">
+          <input id="dbg-filter" type="text" placeholder="filter (e.g. item, post, insight)" />
+          <button id="dbg-copy" class="ghost">Copy all</button>
+          <button id="dbg-clear" class="ghost">Clear</button>
+        </div>
+        <ul id="dbg-urls"></ul>
+        <p class="hint">If <strong>video_list hits</strong> climbs but
+        <strong>Videos seen</strong> stays at 0, TikTok changed the response
+        shape. Expand the snapshot below and share its keys.</p>
+        <details id="dbg-sample-wrap" class="hidden">
+          <summary>Last unparsed video-list payload shape</summary>
+          <pre id="dbg-sample"></pre>
+        </details>
+      </section>
+    </div>
+
+    <footer>
+      <small>v0.1.0 · personal creator backup tool</small>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
